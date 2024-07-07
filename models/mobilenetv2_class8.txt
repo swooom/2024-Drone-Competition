@@ -1,8 +1,8 @@
-Bonobono
-Eagle
-Gmarket
-Hp
-Intel
-Underwood
-Wonju
-Yonsei                
+aeroplane
+bicycle
+bird
+boat
+bottle
+bus
+car
+cat

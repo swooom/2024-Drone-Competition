@@ -53,33 +53,18 @@ class Ui_Dialog(object):
 	######
         self.picRenderW = 100
         self.picRenderH = 100
-        self.Qt_pics = [] #드론이 촬영한 이미지 저장
-        self.Qt_picTimes = [] #각 이미지의 타임스탬프를 저장
-        self.picDateTime = [None]*8 # 8개의 이미지에 대한 날짜 및 시간정보 저장
-        self.timerStartTime = None # 타이머의 시작시간 저장
-        self.latestDetectedLabel = ''  #최근에 탐지퇸 객체의 라벨 저장
-        
-        
-        # self.Bonobonopic = []
-        # self.Eaglepic = []
-        # self.Gmarketpic = []
-        # self.Hppic=[]
-        # self.Intelpic=[]
-        # self.Underwoodpic=[]
-        # self.Wonjupic=[]
-        # self.Yonseipic=[]
-        
-        self.prevFrameLabelIdx = -1   #이전 프레임에서 탐지된 객체의 라벨 인덱스 저장
+        self.Qt_pics = []
+        self.Qt_picTimes = []
+        self.picDateTime = [None]*8
+        self.timerStartTime = None
+        self.latestDetectedLabel = ''
+        self.prevFrameLabelIdx = -1
         self.CLASSIFICATION_FRAME_RECT_PERCENT = 10
-        self.CLASSIFICATION_CONF = 0.99   # 객체분류의 신뢰도
-        self.CLASSIFICATION_FRAME = 5    # 객체 분류를 위한 프레임 수 5개
-        self.sameDetectionFrameCount = 0 # 동일한 객체가 탐지된 프레임의 개수 저장
-        
-        
+        self.CLASSIFICATION_CONF = 0.9
+        self.CLASSIFICATION_FRAME = 5
+        self.sameDetectionFrameCount = 0
 
-
-
-        self.Qt_pics.append(self.P1) # 리스트에 8개의 이미지 추가
+        self.Qt_pics.append(self.P1)
         self.Qt_pics.append(self.P2)
         self.Qt_pics.append(self.P3)
         self.Qt_pics.append(self.P4)
@@ -87,10 +72,7 @@ class Ui_Dialog(object):
         self.Qt_pics.append(self.P6)
         self.Qt_pics.append(self.P7)
         self.Qt_pics.append(self.P8)
-        
-        #P1_1,2,3 = 타임 스탬프. 언제 저게 찍혔는지
         self.Qt_picTimes.append([self.P1_1,self.P1_2,self.P1_3])
-        
         self.Qt_picTimes.append([self.P2_1,self.P2_2,self.P2_3])
         self.Qt_picTimes.append([self.P3_1,self.P3_2,self.P3_3])
         self.Qt_picTimes.append([self.P4_1,self.P4_2,self.P4_3])
@@ -98,26 +80,26 @@ class Ui_Dialog(object):
         self.Qt_picTimes.append([self.P6_1,self.P6_2,self.P6_3])
         self.Qt_picTimes.append([self.P7_1,self.P7_2,self.P7_3])
         self.Qt_picTimes.append([self.P8_1,self.P8_2,self.P8_3])
-        self.picLabels = ['Bonobono','Eagle','Gmarket','Hp','Intel','Underwood','Wonju','Yonsei']     ### 여기서 target 사물을 추가하고, 
+        self.picLabels = ['aeroplane','bicycle','bird','boat','bottle','bus','car','cat']     ### 여기서 target 사물을 추가하고, 
                                                                                                  ### 추가한만큼의 다른 사물의 이름을 지웁니다.
         ######
        
 
 
-### 드론의 상태 업데이트 및 로그 기록 기능
-        self.bOrdering = False # 현재 명령 실행?
-        self.bOrderPause = False # 명령 실행이 일시 중지인지?
+
+        self.bOrdering = False
+        self.bOrderPause = False
 
 
         self.tello = tello.Tello(self.log, self.stateReceive)
         self.updateIP()
 
 
-        self.originFrame = None 
-        self.inferFrame = None  # 추론 프레임을 저장
- 
-        self.bObjectDetection = bObjectDetection # 객체 탐지가 활성화 되었는지
-        if self.bObjectDetection:  # 객체탐지기 초기화
+        self.originFrame = None
+        self.inferFrame = None
+
+        self.bObjectDetection = bObjectDetection
+        if self.bObjectDetection:
             print('Object Detector initialize...')
             from ObjectClassifier import ObjectClassifier
             self.objDetector = ObjectClassifier(device, self.getInferFrame)
@@ -127,13 +109,13 @@ class Ui_Dialog(object):
         self.resetDetectionInfo()
 
     def logWriter(self):
-        self.updateImage()  #이미지 업데이트 메서드
+        self.updateImage()
         for logStr in self.logBuffer:
             self.loglist.append(logStr)
         if len(self.logBuffer) > 0:
             self.loglist.verticalScrollBar().setValue(self.loglist.verticalScrollBar().maximum())
         self.logBuffer.clear()
-        self.updateState() # 드론의 상태를 업데이트
+        self.updateState()
     def log(self, logStr):
             logStr = logStr.strip()
             self.logBuffer.append(logStr)
@@ -245,28 +227,11 @@ class Ui_Dialog(object):
                                     #self.Qt_picTimes[i][0].display(curTime.minute)
                                     #self.Qt_picTimes[i][1].display(curTime.second)
                                     #self.Qt_picTimes[i][2].display(millisecond)
+
                                     self.Qt_picTimes[i][0].display(minute)
                                     self.Qt_picTimes[i][1].display(sec)
                                     self.Qt_picTimes[i][2].display(int(timerDateTime.microseconds/10000))
                                     self.picDateTime[i] = curTime
-                                    
-                                    
-                                    ## 라벨에 따라 디렉터리 생성
-                                    output_directory = './captureResult/'
-                                    label_directory = os.path.join(output_directory, self.latestDetectedLabel)
-                                    if not os.path.exists(label_directory):
-                                        os.makedirs(label_directory)
-
-                                    # 이미지를 해당 라벨의 디렉터리에 저장
-                                    image_path = os.path.join(label_directory, self.latestDetectedLabel + curTime.__str__() + '.jpg')
-                                    onlyObjFrameBGR = cv2.cvtColor(objRenderImg, cv2.COLOR_RGB2BGR)
-                                    cv2.imwrite(image_path, onlyObjFrameBGR)
-
-                                    self.Qt_pics[i].setPixmap(QtGui.QPixmap(os.path.join(label_directory, self.latestDetectedLabel + curTime.__str__() + '.jpg')))
-                                    ## 로그 작성
-                                    #self.log(self.latestDetectedLabel + ' captured')
-
-
 
                                     # 이미지 업데이트
                                     objRenderImg = cv2.resize(self.originFrame, (self.picRenderW, self.picRenderH))
@@ -274,15 +239,14 @@ class Ui_Dialog(object):
                                     bytesPerLine = 3 * self.picRenderW
                                     qImg = QtGui.QImage(objRenderImg.data, self.picRenderW, self.picRenderH,
                                                         bytesPerLine, QtGui.QImage.Format_RGB888)
-                                   
-                                   
-                                   
                                     self.Qt_pics[i].setPixmap(QtGui.QPixmap(qImg))
-                                    
-                                    
                                     # 다음 인식할 준비
                                     self.latestDetectedLabel = detectedLabel
-                                    import os                                    
+                                    # 이미지 저장
+                                    onlyObjFrameBGR = cv2.cvtColor(objRenderImg, cv2.COLOR_RGB2BGR)
+                                    cv2.imwrite('./captureResult/' + self.latestDetectedLabel + curTime.__str__()+ '.jpg', onlyObjFrameBGR)
+                                    self.log(self.latestDetectedLabel + ' captured')
+
 ################################드론이 원하는 사물 발견하면 script대로 움직이기#############################
 
                                     target1='box'
@@ -357,7 +321,7 @@ class Ui_Dialog(object):
 
 ##########################################################################################################
 
-                        if len(classifiedLabel) > 0:  # 각 객체의 레이블과 신뢰도를 표시
+                        if len(classifiedLabel) > 0:
                             # 각 레이블의 conf값 보여주기
                             for i in range(3):
                                 if i >= 3:
@@ -382,7 +346,7 @@ class Ui_Dialog(object):
         except Exception as error:
                 traceback.print_exc()
                 print("catch error")
-    def resetDetectionInfo(self):  # 탐지된 정보 초기화
+    def resetDetectionInfo(self):
         for i in range(8):
             self.Qt_pics[i].setPixmap(QtGui.QPixmap("./res/."+(i+1).__str__()+".jpg"))
             self.Qt_picTimes[i][0].display(0)
@@ -394,7 +358,7 @@ class Ui_Dialog(object):
         self.T1.display(0)
         self.T2.display(0)
         self.T3.display(0)
-        #os.system('del /f .\captureResult\*.jpg')
+        os.system('del /f .\captureResult\*.jpg')
 
 
     # OrderList
@@ -634,13 +598,11 @@ class Ui_Dialog(object):
         self.gridLayout_7.addLayout(self.horizontalLayout_17, 3, 0, 1, 1)
         self.horizontalLayout_25 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_25.setObjectName("horizontalLayout_25")
-        
         self.P1 = QtWidgets.QLabel(Dialog)
         self.P1.setText("")
         self.P1.setPixmap(QtGui.QPixmap(":/Picture/noimg.jpg"))
         self.P1.setObjectName("P1")
         self.horizontalLayout_25.addWidget(self.P1)
-        
         self.P1_1 = QtWidgets.QLCDNumber(Dialog)
         self.P1_1.setDigitCount(2)
         self.P1_1.setProperty("intValue", 99)
@@ -1322,50 +1284,6 @@ class Ui_Dialog(object):
         font.setPointSize(10)
         self.Down_M1.setFont(font)
         self.Down_M1.setObjectName("Down_M1")
-        
-        '''
-        M1 style sheet]
-        '''
-        self.Forward_M1.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}") 
-        self.Left_M1.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        self.Right_M1.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        self.Backward_M1.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        
-        
-        
-        
         self.gridLayout_4.addWidget(self.Down_M1, 2, 1, 1, 1)
         self.gridLayout_6.addLayout(self.gridLayout_4, 0, 0, 1, 1)
         self.contorlWidget.addTab(self.mode1, "")
@@ -1463,48 +1381,7 @@ class Ui_Dialog(object):
         font.setPointSize(10)
         self.Down_M2.setFont(font)
         self.Down_M2.setObjectName("Down_M2")
-        
-        
-        self.Forward_M2.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        self.Left_M2.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        self.Right_M2.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        self.Backward_M2.setStyleSheet(
-            "QPushButton {"
-            "background-color: #E3FEFF;"
-            "border: 2px solid #555;"
-            "border-radius: 10px;"
-            "}"
-            "QPushButton:hover {"
-            "background-color: #F4E3FF;"
-            "}")
-        
-        
         self.gridLayout_2.addWidget(self.Down_M2, 2, 1, 1, 1)
-        
         self.gridLayout_3.addLayout(self.gridLayout_2, 0, 2, 1, 1)
         self.contorlWidget.addTab(self.tab2, "")
         self.verticalLayout_4.addWidget(self.contorlWidget)
@@ -1515,29 +1392,28 @@ class Ui_Dialog(object):
         self.table.setCurrentIndex(0)
         self.contorlWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-        
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Yonsei-Intel Drone Hackathon"))
-        self.label_56.setText(_translate("Dialog", "min"))
-        self.label_57.setText(_translate("Dialog", "sec"))
-        self.label_68.setText(_translate("Dialog", "min"))
-        self.label_69.setText(_translate("Dialog", "sec"))
-        self.label_70.setText(_translate("Dialog", "min"))
-        self.label_71.setText(_translate("Dialog", "sec"))
-        self.label_49.setText(_translate("Dialog", "min"))
-        self.label_50.setText(_translate("Dialog", "sec"))
-        self.label_51.setText(_translate("Dialog", "min"))
-        self.label_52.setText(_translate("Dialog", "sec"))
-        self.label_8.setText(_translate("Dialog", "min"))
-        self.label_13.setText(_translate("Dialog", "sec"))
-        self.label_54.setText(_translate("Dialog", "min"))
-        self.label_55.setText(_translate("Dialog", "sec"))
-        self.label_7.setText(_translate("Dialog", "min"))
-        self.label_12.setText(_translate("Dialog", "sec"))
+        self.label_56.setText(_translate("Dialog", "분"))
+        self.label_57.setText(_translate("Dialog", "초"))
+        self.label_68.setText(_translate("Dialog", "분"))
+        self.label_69.setText(_translate("Dialog", "초"))
+        self.label_70.setText(_translate("Dialog", "분"))
+        self.label_71.setText(_translate("Dialog", "초"))
+        self.label_49.setText(_translate("Dialog", "분"))
+        self.label_50.setText(_translate("Dialog", "초"))
+        self.label_51.setText(_translate("Dialog", "분"))
+        self.label_52.setText(_translate("Dialog", "초"))
+        self.label_8.setText(_translate("Dialog", "분"))
+        self.label_13.setText(_translate("Dialog", "초"))
+        self.label_54.setText(_translate("Dialog", "분"))
+        self.label_55.setText(_translate("Dialog", "초"))
+        self.label_7.setText(_translate("Dialog", "분"))
+        self.label_12.setText(_translate("Dialog", "초"))
         self.TimerReset.setText(_translate("Dialog", "RESET"))
-        self.label.setText(_translate("Dialog", "MIN"))
-        self.label_2.setText(_translate("Dialog", "SEC"))
+        self.label.setText(_translate("Dialog", "분"))
+        self.label_2.setText(_translate("Dialog", "초"))
         self.startBtn.setText(_translate("Dialog", "START"))
         self.pauseBtn.setText(_translate("Dialog", "PAUSE"))
         self.stopBtn.setText(_translate("Dialog", "STOP"))
