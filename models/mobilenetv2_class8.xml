@@ -7078,7 +7078,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/global_average_pooling2d/Mean:0">
+				<port id="2" precision="FP32" names="sequential_1/global_average_pooling2d_1/Mean:0">
 					<dim>-1</dim>
 					<dim>1280</dim>
 				</port>
@@ -7111,7 +7111,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="364" name="sequential/dense/MatMul" type="MatMul" version="opset1">
+		<layer id="364" name="sequential_1/dense_3/MatMul" type="MatMul" version="opset1">
 			<data transpose_a="false" transpose_b="true" />
 			<input>
 				<port id="0" precision="FP32">
@@ -7124,7 +7124,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/dense/MatMul:0">
+				<port id="2" precision="FP32" names="sequential_1/dense_3/MatMul:0">
 					<dim>-1</dim>
 					<dim>512</dim>
 				</port>
@@ -7157,7 +7157,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="367" name="sequential/dense/BiasAdd" type="Add" version="opset1">
+		<layer id="367" name="sequential_1/dense_3/BiasAdd" type="Add" version="opset1">
 			<data auto_broadcast="numpy" />
 			<input>
 				<port id="0" precision="FP32">
@@ -7170,13 +7170,13 @@
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/dense/BiasAdd:0">
+				<port id="2" precision="FP32" names="sequential_1/dense_3/BiasAdd:0">
 					<dim>-1</dim>
 					<dim>512</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="368" name="sequential/dense/Relu" type="ReLU" version="opset1">
+		<layer id="368" name="sequential_1/dense_3/Relu" type="ReLU" version="opset1">
 			<input>
 				<port id="0" precision="FP32">
 					<dim>-1</dim>
@@ -7184,7 +7184,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1" precision="FP32" names="sequential/dense/Relu:0">
+				<port id="1" precision="FP32" names="sequential_1/dense_3/Relu:0">
 					<dim>-1</dim>
 					<dim>512</dim>
 				</port>
@@ -7217,7 +7217,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="371" name="sequential/dense_1/MatMul" type="MatMul" version="opset1">
+		<layer id="371" name="sequential_1/dense_4/MatMul" type="MatMul" version="opset1">
 			<data transpose_a="false" transpose_b="true" />
 			<input>
 				<port id="0" precision="FP32">
@@ -7230,7 +7230,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/dense_1/MatMul:0">
+				<port id="2" precision="FP32" names="sequential_1/dense_4/MatMul:0">
 					<dim>-1</dim>
 					<dim>64</dim>
 				</port>
@@ -7263,7 +7263,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="374" name="sequential/dense_1/BiasAdd" type="Add" version="opset1">
+		<layer id="374" name="sequential_1/dense_4/BiasAdd" type="Add" version="opset1">
 			<data auto_broadcast="numpy" />
 			<input>
 				<port id="0" precision="FP32">
@@ -7276,13 +7276,13 @@
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/dense_1/BiasAdd:0">
+				<port id="2" precision="FP32" names="sequential_1/dense_4/BiasAdd:0">
 					<dim>-1</dim>
 					<dim>64</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="375" name="sequential/dense_1/Relu" type="ReLU" version="opset1">
+		<layer id="375" name="sequential_1/dense_4/Relu" type="ReLU" version="opset1">
 			<input>
 				<port id="0" precision="FP32">
 					<dim>-1</dim>
@@ -7290,17 +7290,17 @@
 				</port>
 			</input>
 			<output>
-				<port id="1" precision="FP32" names="sequential/dense_1/Relu:0">
+				<port id="1" precision="FP32" names="sequential_1/dense_4/Relu:0">
 					<dim>-1</dim>
 					<dim>64</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="376" name="Transpose_9500_compressed" type="Const" version="opset1">
-			<data element_type="f16" shape="9, 64" offset="5791080" size="1152" />
+			<data element_type="f16" shape="8, 64" offset="5791080" size="1024" />
 			<output>
 				<port id="0" precision="FP16">
-					<dim>9</dim>
+					<dim>8</dim>
 					<dim>64</dim>
 				</port>
 			</output>
@@ -7312,18 +7312,18 @@
 			</rt_info>
 			<input>
 				<port id="0" precision="FP16">
-					<dim>9</dim>
+					<dim>8</dim>
 					<dim>64</dim>
 				</port>
 			</input>
 			<output>
 				<port id="1" precision="FP32">
-					<dim>9</dim>
+					<dim>8</dim>
 					<dim>64</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="378" name="sequential/dense_2/MatMul" type="MatMul" version="opset1">
+		<layer id="378" name="sequential_1/dense_5/MatMul" type="MatMul" version="opset1">
 			<data transpose_a="false" transpose_b="true" />
 			<input>
 				<port id="0" precision="FP32">
@@ -7331,23 +7331,23 @@
 					<dim>64</dim>
 				</port>
 				<port id="1" precision="FP32">
-					<dim>9</dim>
+					<dim>8</dim>
 					<dim>64</dim>
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/dense_2/MatMul:0">
+				<port id="2" precision="FP32" names="sequential_1/dense_5/MatMul:0">
 					<dim>-1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="379" name="Constant_11008_compressed" type="Const" version="opset1">
-			<data element_type="f16" shape="1, 9" offset="5792232" size="18" />
+			<data element_type="f16" shape="1, 8" offset="5792104" size="16" />
 			<output>
 				<port id="0" precision="FP16">
 					<dim>1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</output>
 		</layer>
@@ -7359,55 +7359,55 @@
 			<input>
 				<port id="0" precision="FP16">
 					<dim>1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</input>
 			<output>
 				<port id="1" precision="FP32">
 					<dim>1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="381" name="sequential/dense_2/BiasAdd" type="Add" version="opset1">
+		<layer id="381" name="sequential_1/dense_5/BiasAdd" type="Add" version="opset1">
 			<data auto_broadcast="numpy" />
 			<input>
 				<port id="0" precision="FP32">
 					<dim>-1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 				<port id="1" precision="FP32">
 					<dim>1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</input>
 			<output>
-				<port id="2" precision="FP32" names="sequential/dense_2/BiasAdd:0">
+				<port id="2" precision="FP32" names="sequential_1/dense_5/BiasAdd:0">
 					<dim>-1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="382" name="sequential/dense_2/Softmax" type="SoftMax" version="opset8">
+		<layer id="382" name="sequential_1/dense_5/Softmax" type="SoftMax" version="opset8">
 			<data axis="-1" />
 			<input>
 				<port id="0" precision="FP32">
 					<dim>-1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</input>
 			<output>
-				<port id="1" precision="FP32" names="dense_2">
+				<port id="1" precision="FP32" names="dense_5">
 					<dim>-1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="383" name="dense_2" type="Result" version="opset1">
+		<layer id="383" name="dense_5" type="Result" version="opset1">
 			<input>
 				<port id="0" precision="FP32">
 					<dim>-1</dim>
-					<dim>9</dim>
+					<dim>8</dim>
 				</port>
 			</input>
 		</layer>

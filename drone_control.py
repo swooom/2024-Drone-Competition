@@ -60,12 +60,23 @@ class Ui_Dialog(object):
         self.latestDetectedLabel = ''  #최근에 탐지퇸 객체의 라벨 저장
         
         
+        # self.Bonobonopic = []
+        # self.Eaglepic = []
+        # self.Gmarketpic = []
+        # self.Hppic=[]
+        # self.Intelpic=[]
+        # self.Underwoodpic=[]
+        # self.Wonjupic=[]
+        # self.Yonseipic=[]
         
         self.prevFrameLabelIdx = -1   #이전 프레임에서 탐지된 객체의 라벨 인덱스 저장
         self.CLASSIFICATION_FRAME_RECT_PERCENT = 10
-        self.CLASSIFICATION_CONF = 0.96   # 객체분류의 신뢰도
+        self.CLASSIFICATION_CONF = 0.99   # 객체분류의 신뢰도
         self.CLASSIFICATION_FRAME = 5    # 객체 분류를 위한 프레임 수 5개
         self.sameDetectionFrameCount = 0 # 동일한 객체가 탐지된 프레임의 개수 저장
+        
+        
+
 
 
         self.Qt_pics.append(self.P1) # 리스트에 8개의 이미지 추가
@@ -79,6 +90,7 @@ class Ui_Dialog(object):
         
         #P1_1,2,3 = 타임 스탬프. 언제 저게 찍혔는지
         self.Qt_picTimes.append([self.P1_1,self.P1_2,self.P1_3])
+        
         self.Qt_picTimes.append([self.P2_1,self.P2_2,self.P2_3])
         self.Qt_picTimes.append([self.P3_1,self.P3_2,self.P3_3])
         self.Qt_picTimes.append([self.P4_1,self.P4_2,self.P4_3])
@@ -198,7 +210,7 @@ class Ui_Dialog(object):
                     if self.bObjectDetection:
                         # 추론결과물 받기
                         infer_time, classifiedLabel = self.objDetector.getProcessedData()
-                        if len(classifiedLabel) > 0 and classifiedLabel[0][1] > self.CLASSIFICATION_CONF*100:
+                        if len(classifiedLabel) > 0 and classifiedLabel[0][1] >= self.CLASSIFICATION_CONF:
                             if self.prevFrameLabelIdx == -1 or self.prevFrameLabelIdx != classifiedLabel[0][0]:
                                 self.prevFrameLabelIdx = classifiedLabel[0][0]
                                 self.sameDetectionFrameCount = 1
@@ -233,11 +245,28 @@ class Ui_Dialog(object):
                                     #self.Qt_picTimes[i][0].display(curTime.minute)
                                     #self.Qt_picTimes[i][1].display(curTime.second)
                                     #self.Qt_picTimes[i][2].display(millisecond)
-
                                     self.Qt_picTimes[i][0].display(minute)
                                     self.Qt_picTimes[i][1].display(sec)
                                     self.Qt_picTimes[i][2].display(int(timerDateTime.microseconds/10000))
                                     self.picDateTime[i] = curTime
+                                    
+                                    
+                                    ## 라벨에 따라 디렉터리 생성
+                                    output_directory = './captureResult/'
+                                    label_directory = os.path.join(output_directory, self.latestDetectedLabel)
+                                    if not os.path.exists(label_directory):
+                                        os.makedirs(label_directory)
+
+                                    # 이미지를 해당 라벨의 디렉터리에 저장
+                                    image_path = os.path.join(label_directory, self.latestDetectedLabel + curTime.__str__() + '.jpg')
+                                    onlyObjFrameBGR = cv2.cvtColor(objRenderImg, cv2.COLOR_RGB2BGR)
+                                    cv2.imwrite(image_path, onlyObjFrameBGR)
+
+                                    self.Qt_pics[i].setPixmap(QtGui.QPixmap(os.path.join(label_directory, self.latestDetectedLabel + curTime.__str__() + '.jpg')))
+                                    ## 로그 작성
+                                    #self.log(self.latestDetectedLabel + ' captured')
+
+
 
                                     # 이미지 업데이트
                                     objRenderImg = cv2.resize(self.originFrame, (self.picRenderW, self.picRenderH))
@@ -245,14 +274,15 @@ class Ui_Dialog(object):
                                     bytesPerLine = 3 * self.picRenderW
                                     qImg = QtGui.QImage(objRenderImg.data, self.picRenderW, self.picRenderH,
                                                         bytesPerLine, QtGui.QImage.Format_RGB888)
+                                   
+                                   
+                                   
                                     self.Qt_pics[i].setPixmap(QtGui.QPixmap(qImg))
+                                    
+                                    
                                     # 다음 인식할 준비
                                     self.latestDetectedLabel = detectedLabel
-                                    # 이미지 저장
-                                    onlyObjFrameBGR = cv2.cvtColor(objRenderImg, cv2.COLOR_RGB2BGR)
-                                    cv2.imwrite('./captureResult/' + self.latestDetectedLabel + curTime.__str__()+ '.jpg', onlyObjFrameBGR)
-                                    self.log(self.latestDetectedLabel + ' captured')
-
+                                    import os                                    
 ################################드론이 원하는 사물 발견하면 script대로 움직이기#############################
 
                                     target1='box'
@@ -357,14 +387,14 @@ class Ui_Dialog(object):
             self.Qt_pics[i].setPixmap(QtGui.QPixmap("./res/."+(i+1).__str__()+".jpg"))
             self.Qt_picTimes[i][0].display(0)
             self.Qt_picTimes[i][1].display(0)
-            self.Qt_picTimes[i][2].display(0)                                                                                                                                                                                                                                                                                           
+            self.Qt_picTimes[i][2].display(0)
             self.latestDetectedLabel=''
             self.picDateTime[i] = None
         self.timerStartTime = None
         self.T1.display(0)
         self.T2.display(0)
         self.T3.display(0)
-        os.system('del /f .\captureResult\*.jpg')
+        #os.system('del /f .\captureResult\*.jpg')
 
 
     # OrderList
@@ -604,11 +634,13 @@ class Ui_Dialog(object):
         self.gridLayout_7.addLayout(self.horizontalLayout_17, 3, 0, 1, 1)
         self.horizontalLayout_25 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_25.setObjectName("horizontalLayout_25")
+        
         self.P1 = QtWidgets.QLabel(Dialog)
         self.P1.setText("")
         self.P1.setPixmap(QtGui.QPixmap(":/Picture/noimg.jpg"))
         self.P1.setObjectName("P1")
         self.horizontalLayout_25.addWidget(self.P1)
+        
         self.P1_1 = QtWidgets.QLCDNumber(Dialog)
         self.P1_1.setDigitCount(2)
         self.P1_1.setProperty("intValue", 99)
